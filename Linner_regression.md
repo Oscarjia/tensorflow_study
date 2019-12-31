@@ -77,7 +77,17 @@ for i in range(num_coeffs):
 plt.plot(x_train,y_train2)
 plt.show()
 
-
+##手写分数据集的方法
+## 分数据集的方法
+def split_ds(x_ds,y_ds,ratio):
+    arr=np.arange(x_ds.size)
+    np.random.shuffle(arr)
+    num_train=int(ratio*x_ds.size)
+    x_train=x_ds[arr[0:num_train]]
+    x_test=x_ds[arr[num_train:x_ds.size]]
+    y_train=y_ds[arr[0:num_train]]
+    y_test=y_ds[arr[num_train:y_ds.size]]
+    return x_train,x_test,y_train,y_test
 
 
 
