@@ -90,7 +90,54 @@ def split_ds(x_ds,y_ds,ratio):
     return x_train,x_test,y_train,y_test
 
 
+##防止线性回归过拟合，增加惩罚系数
+learningrate=0.001
+training_epoch=100
+reg_lambda=0.
+x_ds=np.linspace(-1,1,100)
+num_coeffs=9
+y_ds_params=[0.]*num_coeffs
+y_ds_params[2]=1
+y_ds=0
 
+for i in range(num_coeffs):
+    y_ds+=y_ds_params[i]*np.power(x_ds,i)
+    
+y_ds+=np.random.randn(*x_ds.shape)*0.3
+
+(x_train,x_test,y_train,y_test)=split_ds(x_ds,y_ds,0.7)
+
+X=tf.placeholder(tf.float32)
+Y=tf.placeholder(tf.float32)
+
+def model(X,w):
+    terms=[]
+    for i in range(num_coeffs):
+        term=tf.multiply(w[i],tf.pow(X,i))
+        terms.append(term)
+    return tf.add_n(terms)
+
+w=tf.Variable([0.]*num_coeffs,name="parameters")
+
+y_model=model(X,w)
+
+cost=tf.div(tf.add(tf.reduce_sum(tf.square(Y-y_model)),tf.multiply(reg_lambda,tf.reduce_sum(tf.square(w)))),2*x_train.size)
+#cost=tf.multiply(reg_lambda,tf.reduce_sum(tf.square(w)))
+train_op=tf.train.GradientDescentOptimizer(learningrate).minimize(cost)
+
+sess=tf.Session()
+init=tf.global_variables_initializer()
+sess.run(init)
+
+for reg_lambda in np.linspace(0,1,100):
+    for epoch in range(training_epoch):
+        sess.run(train_op,feed_dict={X:x_train,Y:y_train})
+    w_val=sess.run(w)
+    print(w_val)   
+    final_cost=sess.run(cost,feed_dict={X:x_test,Y:y_test})
+    print('reg lambda',reg_lambda)
+    print('final cost',final_cost)
+sess.close()
 
 
 ```
