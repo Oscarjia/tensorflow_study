@@ -73,3 +73,33 @@ with tf.Session() as sess:
     print("w_val is {}".format(w_val))
 
 ```
+## softmax 函数
+```python
+learning_rate=0.01
+training_epoch=100
+num_labels=3
+batch_size=100
+X=tf.placeholder("float",shape=(None,num_features))
+Y=tf.placeholder("float",shape=(None,num_labels))
+w=tf.Variable(tf.zeros([num_features,num_labels]))
+b=tf.Variable(tf.zeros([num_labels]))
+y_model=tf.nn.softmax(tf.matmul(X,w)+b)
+cost=-tf.reduce_sum(Y*tf.log(y_model))
+train_op=tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+correct_prediction=tf.equal(tf.argmax(y_model,1), tf.argmax(Y,1))
+accuracy=tf.reduce_mean(tf.cast(correct_prediction,"float"))
+with tf.Session() as sess:
+    tf.global_variables_initializer().run()
+    for step in range(training_epoch*train_size//batch_size):
+        offset = (step * batch_size) % train_size
+        batch_xs=xs[offset:(offset+batch_size),:]
+        batch_lables=labels[offset:(offset+batch_size)]
+        err,_=sess.run([cost,train_op],feed_dict={X:batch_xs,Y:batch_lables})
+        print(step,err)
+    w_val=sess.run(w)
+    print('w ',w_val)
+    b_val=sess.run(b)
+    print('b ',b_val)
+    print("accuracy", accuracy.eval(feed_dict={X: test_xs, Y: test_labels}))
+
+```
