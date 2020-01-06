@@ -75,6 +75,30 @@ with tf.Session() as sess:
 ```
 ## softmax 函数
 ```python
+##test data
+xs_label0 = np.hstack((x1_label0, x2_label0))
+xs_label1 = np.hstack((x1_label1, x2_label1))
+xs_label2 = np.hstack((x1_label2, x2_label2))
+xs = np.vstack((xs_label0, xs_label1, xs_label2)) 
+labels=np.matrix([[1., 0., 0.]]*len(xs_label0)+[[0., 1., 0.]] *len(xs_label1)+[[0., 0., 1.]] * len(x1_label2))
+arr=np.arange(xs.shape[0])
+np.random.shuffle(arr)
+xs=xs[arr,:]
+labels=labels[arr,:]
+test_x1_label0 = np.random.normal(1, 1, (10, 1)) 
+test_x2_label0 = np.random.normal(1, 1, (10, 1))
+test_x1_label1 = np.random.normal(5, 1, (10, 1))
+test_x2_label1 = np.random.normal(4, 1, (10, 1))
+test_x1_label2 = np.random.normal(8, 1, (10, 1))
+test_x2_label2 = np.random.normal(0, 1, (10, 1))
+test_xs_label0 = np.hstack((test_x1_label0, test_x2_label0))
+test_xs_label1 = np.hstack((test_x1_label1, test_x2_label1))
+test_xs_label2 = np.hstack((test_x1_label2, test_x2_label2))
+test_xs = np.vstack((test_xs_label0, test_xs_label1, test_xs_label2))
+test_labels = np.matrix([[1., 0., 0.]] * 10 + [[0., 1., 0.]] * 10+[[0., 0.,1.]] * 10)
+train_size, num_features = xs.shape
+
+##
 learning_rate=0.01
 training_epoch=100
 num_labels=3
