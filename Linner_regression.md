@@ -142,7 +142,7 @@ sess.close()
 
 ```
 #### tensorflow 2.0版本线性回归
-`python
+```python
 #线性回归
 n_examples=1000
 training_steps=1000
@@ -185,4 +185,4 @@ for step in range(training_steps):
     if step==0 or step % display_step == 0:
         print(deltaW.numpy(), deltaB.numpy())
     print("Loss at step {:02d}: {:.6f}".format(step, loss(x, y, W, B)))
-`
+```
