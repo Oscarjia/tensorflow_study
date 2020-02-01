@@ -141,3 +141,48 @@ sess.close()
 
 
 ```
+#### tensorflow 2.0版本线性回归
+`python
+#线性回归
+n_examples=1000
+training_steps=1000
+display_step=100
+learning_rate =0.01
+m,c=6,-5
+def train_data(n, m, c):
+    x=tf.random.normal([n])
+    noice=tf.random.normal([n])
+    y=m*x+c+noice
+    return x,y
+def prediction(x,weight,bias):
+    return weight*x+bias
+def loss(x,y,weight,bias):
+    error=prediction(x,weight,bias)-y
+    squared_error=tf.square(error)
+    return tf.reduce_mean(squared_error)
+def grad(x,y,weight,bias):
+    with tf.GradientTape() as tape:
+        loss_=loss(x,y,weight,bias)
+        return tape.gradient(loss_,[weight,bias])
+#initiate data
+from  matplotlib import pyplot as plt
+import numpy as np
+x, y = train_data(n_examples,m,c) 
+plt.scatter(x,y)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title("figure 1 training data")
+W=tf.Variable(np.random.randn())
+B=tf.Variable(np.random.randn())
+print("Initial loss: {:.3f}".format(loss(x, y, W, B)))
+#train process
+for step in range(training_steps):
+    deltaW, deltaB = grad(x, y, W, B) # direction(sign) and value of the gradients of our loss 
+    change_W = deltaW * learning_rate
+    change_B = deltaB * learning_rate 
+    W.assign_sub(change_W)
+    B.assign_sub(change_B)
+    if step==0 or step % display_step == 0:
+        print(deltaW.numpy(), deltaB.numpy())
+    print("Loss at step {:02d}: {:.6f}".format(step, loss(x, y, W, B)))
+`
