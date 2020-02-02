@@ -1,5 +1,5 @@
 
-#分类是一个很重要的任务
+#分类是一个很重要的任务：tensorflow 1.0版本
 #线性回归可以用作分类，缺点是对异常值敏感，不准确。
 ```python
 
@@ -125,5 +125,79 @@ with tf.Session() as sess:
     b_val=sess.run(b)
     print('b ',b_val)
     print("accuracy", accuracy.eval(feed_dict={X: test_xs, Y: test_labels}))
+
+```
+tensorflow 2.0对于分类模型
+```python
+tensorflow 在逻辑回归的例子
+
+Input:
+
+from tensorflow.keras.datasets import fashion_mnist
+
+#初始化参数
+batch_size = 128
+epochs = 20
+n_classes = 10
+learning_rate = 0.1
+width = 28 # of our imagesheight = 28 # of our images
+height = 28
+x_train = x_train.astype('float32') / 255
+x_test = x_test.astype('float32') / 255.
+
+(x_train, y_train),(x_test, y_test)=fashion_mnist.load_data() #加载数据
+
+x_train = x_train.reshape((60000, width * height)) #flatten data
+x_test = x_test.reshape((10000, width * height))
+
+split = 50000 
+(x_train, x_valid) = x_train[:split], x_train[split:] 
+(y_train, y_valid) = y_train[:split], y_train[split:]
+y_train_ohe = tf.one_hot(y_train, depth=n_classes).numpy()#one hot 编码
+y_valid_ohe = tf.one_hot(y_valid, depth=n_classes).numpy()
+y_test_ohe = tf.one_hot(y_test, depth=n_classes).numpy()
+Model:
+
+#定义模型。
+class LogisticRegression(tf.keras.Model):
+    def __init__(self, num_classes):
+        super().__init__()
+        self.dense=tf.keras.layers.Dense(10)
+    def call(self,inputs,training=None, mask=None):
+        output = self.dense(inputs) 
+        with tf.device('/cpu:0'):
+            output = tf.nn.softmax(output)
+        return output
+#compile 模型。
+model = LogisticRegression(n_classes)
+optimiser =tf.keras.optimizers.Adam()
+model.compile(optimizer=optimiser, loss='categorical_crossentropy', metrics=['accuracy'], )
+Train model:
+
+#
+dummy_x = tf.zeros((1, width * height))
+model.call(dummy_x)
+#保存训练好的模型参数。
+from tensorflow.keras.callbacks import ModelCheckpoint
+checkpointer=ModelCheckpoint(filepath="./model.weights.best.hdf5", verbose=2, save_best_only=True, save_weights_only=True)
+model.fit(x_train, y_train_ohe, batch_size=batch_size, epochs=epochs,validation_data=(x_valid, y_valid_ohe), callbacks=[checkpointer], verbose=2)
+#加载最好的模型参数。
+model.load_weights("./model.weights.best.hdf5")
+#评估模型参数。
+scores = model.evaluate(x_test, y_test_ohe, batch_size, verbose=2)
+#还原预测的结果。
+index_predicted = np.argmax(y_predictions[index]) 
+
+
+如何利用保存的参数来实例化一个model:
+
+model2 = LogisticRegression(n_classes) #实例化模型对象
+model2.load_weights("./model.weights.best.hdf5")#加载参数
+optimiser =tf.keras.optimizers.Adam()#模型
+#实例化模型
+model2.compile(optimizer=optimiser, loss='categorical_crossentropy', metrics=['accuracy'], )
+#评估模型
+scores = model2.evaluate(x_test, y_test_ohe, batch_size, verbose=2)
+
 
 ```
