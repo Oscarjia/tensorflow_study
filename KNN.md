@@ -73,5 +73,8 @@ predictions=model.predict(test_x)
  ```
 #### 5、测试集的结果
 ```python 
+#机器学习模型预测
 results1=prediction(train_x, test_x, train_y,k)
+#神经网络模型预测
+predictions=model.predict(test_x)
 ```
