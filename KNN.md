@@ -34,7 +34,9 @@ test_y = y[test_indices]
 ##### 4.2 选取每一个元素的top_k元素的标签。
 
 ##### 4.3 根据真理在大多数人的手中的原则，确定测试集的标签。tf.math.bincount(item)可以计算出出现次数最多的元素。
+###### 机器学习模型
 ```python
+#机器学习模型
 def prediction(train_x, test_x, train_y,k):
     #print(test_x)
     results=[]
@@ -52,7 +54,23 @@ def prediction(train_x, test_x, train_y,k):
     # or
     # distances = tf.reduce_sum(tf.abs(tf.subtract(train_x, tf.expand_dims(test_x, axis =1))), axis=2)
  ```
+ ###### 神经网络模型
+ ```python
+ #神经网络模型
+ model = tf.keras.Sequential([
+  tf.keras.layers.Dense(10, activation=tf.nn.relu, input_shape=(4,)),  # 需要给出输入的形式
+  tf.keras.layers.Dense(10, activation=tf.nn.relu),
+  tf.keras.layers.Dense(3)
+])
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+train_yhot=tf.one_hot(train_y,depth=3)
+model.compile(optimizer,loss='categorical_crossentropy',metrics=['accuracy'],)
+model.fit(train_x, train_yhot, batch_size=batch_size,epochs=epochs,verbose=2)
+test_yhot=tf.one_hot(test_y,depth=3
+#测试结果
+predictions=model.predict(test_x)
  
+ ```
 #### 5、测试集的结果
 ```python 
 results1=prediction(train_x, test_x, train_y,k)
